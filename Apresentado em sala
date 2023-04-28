@@ -1,0 +1,131 @@
+class Simplex():
+    def __init__(self):
+        self.table = []
+
+    def func_obj(self, fo: int):
+        self.table.append(fo)
+
+    def func_rest(self, fr: int):
+        self.table.append(fr)
+
+    def coluna_pivo(self):
+        menor_valor = min(self.table[0])
+        col_pivo = self.table[0].index(menor_valor)
+        return col_pivo
+
+    def linha_que_sai(self, col_pivo: int):
+        coluna_resultado = []
+        for i in range(len(self.table)):
+            resultado = []
+            if self.table[i][col_pivo] <= 0:
+                resultado.append(self.table[0][-1])
+            if self.table[i][col_pivo] > 0:
+                divisao_coluna_resultado = self.table[i][-1] / self.table[i][col_pivo]
+                resultado.append(divisao_coluna_resultado)
+            coluna_resultado.append(resultado)
+        menor_valor = min(coluna_resultado[1: ])
+        linha_que_sai = coluna_resultado.index(menor_valor)
+        return linha_que_sai
+
+    def linha_que_entra(self, col_pivo: int, linha_que_sai: int):
+        linha_i1 = []
+        for k in range(len(self.table[0])):
+            divisão = self.table[linha_que_sai][k] / self.table[linha_que_sai][col_pivo]
+            linha_i1.append(divisão)
+        self.table[linha_que_sai] = linha_i1
+
+    def novas_linhas(self, col_pivo: int, linha_que_sai: int):
+        for i in range(len(self.table)):
+            if i != linha_que_sai:
+                valor = self.table[i][col_pivo]
+                linha = []
+                for k in range(len(self.table[0])):
+                    novos_valores = self.table[i][k] - (self.table[linha_que_sai][k] * valor)
+                    linha.append(novos_valores)
+                self.table[i] = linha
+
+    def ha_negativo(self):
+        menor_valor = min(self.table[0])
+        if menor_valor < 0:
+            negativo = True
+        else:
+            negativo = False
+        return negativo
+
+    def Resolver(self):
+        self.mostra_matriz()
+        while self.ha_negativo():
+            col_pivo = self.coluna_pivo()
+            print(f"coluna pivô: {col_pivo}\t")
+            l_q_sai = self.linha_que_sai(col_pivo)
+            print(f"linha que sairá: {l_q_sai}\t")
+            print()
+            l_q_entra = self.linha_que_entra(col_pivo, l_q_sai)
+            n_linhas = self.novas_linhas(col_pivo, l_q_sai)
+            self.mostra_matriz()
+
+    def mostra_matriz(self):
+        for i in range(len(self.table)):
+            for k in range(len(self.table[0])):
+                print(f"{self.table[i][k]}\t", end="")
+            print()
+        print("---------------------------------------------------------")
+    def Resolução(self):
+        self.Resolver()
+        t = self.table.copy()
+        t1 = []
+        t2 = []
+        for i in range(len(self.table)):
+            t1.append(t[i][1])
+            t2.append(t[i][2])
+        if min(t1) == 0 and max(t1) == 1 :
+          i1 = t1.index(max(t1))
+          x = self.table[i1][-1]
+        elif min(t1)!= 0 or max(t1) != 1:
+          x = 0
+        if min(t2) == 0 and max(t2) == 1 :
+          i2 = t2.index(max(t2))
+          y = self.table[i2][-1]
+        elif min(t2)!= 0 or max(t2) != 1:
+          y = 0
+        print()
+        return print(f"A função será maximizada, com {int(x)} unidades de {X} e {int(y)} unidades de {Y}, que resultará em uma valor máximo de {int(self.table[0][-1])}.")
+
+#---------------------------------------------------------------------------#
+# Uma construtoras de casas, tal se especializa na construção de casas modernas e de madeira,
+# sabendo que a construtora possui 350 trabalhadores, e que para a construção de cada unidade de casa
+# é necessário de 12 e 10 trabalhadores, respectivamente.
+#
+#       A casa moderna custará na venda 90 mil Reais e a de madeira 75 mil Reais. Tal organização possui
+# um tempo limite para a construção das casas, dado isto, a mesma prevê que consegue construir no mâximo 28 casas,
+# independente do tipo da mesma. Com isso a construtora busca saber quantas casas de cada tipo construir, para obter-se
+# o melhor retorno possível.
+
+# Função:
+#        X = Quantidade de casas modernas; 
+#        Y = Quantidade de casas de madeira;
+#        L = 90X + 75Y
+
+# Restrições:
+#       12X + 10Y <= 350 (N. de trabalhadores)
+#       X + Y <=28 (N. de casas)
+#       X, Y >= 0
+
+
+# Trazendo para o método SIMPLEX:
+#
+#    Max  L - 90X -75Y = 0
+#    s/n  
+#       12X + 10Y + F1 = 350
+#       X + Y + F2 = 28
+
+X = "casas moderna"
+Y = "casas de madeira"
+fob = [1, -90, -75, 0, 0, 0]
+fer1 = [0, 12, 10, 1, 0, 350]
+fer2 = [0, 1, 1, 0, 1, 28]
+simplex = Simplex()
+simplex.func_obj(fob)
+simplex.func_rest(fer1)
+simplex.func_rest(fer2)
+print(simplex.Resolução())
